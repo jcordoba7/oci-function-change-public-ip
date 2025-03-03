@@ -13,10 +13,11 @@ This Python function will help you to change the public IP of a specific compute
    ```
 3. The instance to be updated must have a Reserved Public IP.
 
-Once you've created the required IAM policies, you can go to create a new python function using the Fn Project CLI. Then you can replace the content for each one of the files with the code in this repo :)
+Once you've created the required IAM policies, you can go to create a new python function using the Fn Project CLI. Then you can replace the content for each one of the generated files with the code in this repo :)
 
 Finally, in order to test the function you can type the following to invoke it.
 ```
 echo '{"instance_id": "ocid1.instance.oc1.phx.anyhql..........vv5jzicyq"}' | fn invoke app-general-purpose change-ip-python
 ```
 
+## Good Testing!
