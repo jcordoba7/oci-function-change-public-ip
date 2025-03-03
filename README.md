@@ -1,8 +1,8 @@
-##Change a Public IP for an OCI instance
+## Change a Public IP for an OCI instance
 
 This Python function will help you to change the public IP of a specific compute instance, given its OCID.
 
-###Prerequisites
+### Prerequisites
 1. Define the policy that gives privileges to "any-user" to manage vNICs resources in the desired compartment or tenancy (with the required condition).
    ´´´
    Allow any-user to manage virtual-network-family in compartment <compartment-name> where ALL {request.principal.type= 'fnfunc', request.resource.compartment.id = '<compartment-ocid>'}
