@@ -8,14 +8,14 @@ from fdk import response
 def handler(ctx, data: io.BytesIO = None):
     
     try:
-        message = "No OCID  ->  "
+        message = "No OCID... "
 
         # Read input
         body = json.loads(data.getvalue()) if data else {}
         instance_ocid = body.get("instance_id")
 
         if not instance_ocid:
-            message += "Instance OCID is required  ->  "
+            message = "Instance OCID is required... "
 
         # Load OCI config
         signer = oci.auth.signers.get_resource_principals_signer()
@@ -27,13 +27,13 @@ def handler(ctx, data: io.BytesIO = None):
         vnics = compute_client.list_vnic_attachments(instance.compartment_id, instance_id=instance_ocid).data
 
         if not vnics:
-            message += "No VNICs found for instance.  ->  "
+            message = "No VNICs found for instance... "
 
         vnic_id = vnics[0].vnic_id  # Assume first VNIC
         vnic = vnic_client.get_vnic(vnic_id).data
         
         if not vnic.public_ip:
-            message += "Instance does not have a public IP.  ->  "
+            message = "Instance does not have a public IP... "
 
         old_ip = vnic.public_ip
 
@@ -45,7 +45,7 @@ def handler(ctx, data: io.BytesIO = None):
                 private_ip_ocid = private_ip.id
                 break
         else:
-            message += "  ....  Private IP not found.  ->  "
+            message = "Private IP not found... "
 
         # Get current Public IP details
         public_ip_list = vnic_client.list_public_ips(scope="REGION", compartment_id=instance.compartment_id).data
@@ -55,12 +55,10 @@ def handler(ctx, data: io.BytesIO = None):
                 public_ip_ocid = public_ip.id
                 break
         else:
-            message += "  ....  Public IP not found.  ->  "
+            message = "Public IP not found... "
 
         # Unassign current public IP
-        vnic_client.delete_public_ip(public_ip_id=public_ip_ocid)
-
-        message += "  ->  Elimino la IP!!  ->  "        
+        vnic_client.delete_public_ip(public_ip_id=public_ip_ocid)  
 
         # Assign new public IP
         new_ip = vnic_client.create_public_ip(
@@ -73,9 +71,7 @@ def handler(ctx, data: io.BytesIO = None):
             )
         ).data.ip_address
 
-        message += "  ->  Se asigno nueva IP!!  ->  "
-        message += "  ->  Public IP changed successfully => " + "old_ip: " + old_ip + " and new_ip: " + new_ip
-        #message += "  ->  VNIC_PRVT_IP: " + vnic.private_ip
+        message = "Public IP changed successfully! :::::: " + "old_ip: " + old_ip + " >>> new_ip: " + new_ip
 
     except (Exception, ValueError) as ex:
         logging.getLogger().info('Exception Error!: ' + str(ex))
